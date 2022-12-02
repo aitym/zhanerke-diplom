@@ -1,0 +1,10 @@
+version: '3'
+services:
+  python3:
+    container_name: python-3
+    image: python:3
+    entrypoint: ''
+    command: sleep inf
+    volumes:
+      - ./:/var/www
+    working_dir: /var/www
