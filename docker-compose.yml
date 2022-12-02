@@ -5,8 +5,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        - PUID=${PUID}
+        - PGID=${PGID}
     entrypoint: ''
     command: sleep inf
+    user: worker
     volumes:
-    - ./:/usr/src/app
-    working_dir: /usr/src/app
+      - ./:/home/worker
+      - /etc/passwd:/etc/passwd:ro
+      - /etc/group:/etc/group:ro
+    working_dir: /home/worker
