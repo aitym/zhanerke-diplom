@@ -2,7 +2,9 @@ version: '3'
 services:
   python3:
     container_name: python-3
-    image: python:3
+    build:
+      context: .
+      dockerfile: Dockerfile
     entrypoint: ''
     command: sleep inf
     volumes:
