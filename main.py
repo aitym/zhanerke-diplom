@@ -2,6 +2,8 @@
 
 import xlrd
 import numpy as np
+import matplotlib.pyplot as plt
+import scipy.fftpack
 
 DATASETS = [
     {'workbook_path': 'sample.xlsx', 'sheet_name': 'For C8 between lines'}
@@ -40,30 +42,6 @@ def calculate_y_coordinate(current_vector, x):
     f, t = current_vector['from'], current_vector['to']
     return f['y'] + (x - f['x']) * (t['y'] - f['y']) / (t['x'] - f['x'])
 
-def fft(x):
-    x = np.asarray(x, dtype=float)
-    N = x.shape[0]
-
-    if np.log2(N) % 1 > 0:
-        raise ValueError("size of x must be a power of 2")
-
-    N_min = min(N, MAX_N)
-
-    n = np.arange(N_min)
-    k = n[:, None]
-    M = np.exp(-2j * np.pi * n * k / N_min)
-    X = np.dot(M, x.reshape((N_min, -1)))
-
-    while X.shape[0] < N:
-        X_even = X[:, :X.shape[1] / 2]
-        X_odd = X[:, X.shape[1] / 2:]
-        factor = np.exp(-1j * np.pi * np.arange(X.shape[0])
-                        / X.shape[0])[:, None]
-        X = np.vstack([X_even + factor * X_odd,
-                       X_even - factor * X_odd])
-
-    return X.ravel()
-
 for dataset in DATASETS:
     data = read_from_excel_file(dataset['workbook_path'], dataset['sheet_name'])
     data = remove_rows(data)
@@ -91,6 +69,12 @@ for dataset in DATASETS:
         cy = calculate_y_coordinate(cv, cx)
         y.append(cy)
 
-    result = fft(np.asarray(y))
-    for data in result:
-        print(data)
+    N = y_matrix_size
+    T = 1.0 / N
+    x = np.linspace(0.0, N * T, N)
+    yf = scipy.fftpack.fft(np.asarray(y))
+    xf = np.linspace(0.0, 1.0 // (2.0 * T), N // 2)
+
+    fig, ax = plt.subplots()
+    ax.plot(xf, 2.0 / N * np.abs(yf[:N // 2]))
+    plt.show()
