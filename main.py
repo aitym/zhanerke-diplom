@@ -70,7 +70,7 @@ for dataset in DATASETS:
     data = average_by_x_coordinates(data)
     data = sort_by_x_coordinates(data)
 
-    min_x, min_y, max_x, max_y, points_count = data[0]['x'], data[0]['y'], data[-1]['x'], data[-1]['y'], len(data)
+    min_x, max_x, points_count = data[0]['x'], data[-1]['x'], len(data)
 
     y_matrix_size = 1
     while y_matrix_size < points_count:
@@ -83,12 +83,11 @@ for dataset in DATASETS:
     for y_matrix_index in range(y_matrix_size):
         cx = min_x + y_matrix_index * step
         if (data[data_index]['x'] >= min_x) and (data[data_index]['x'] <= max_x):
-            while (data_index + 1 < points_count) and (data[data_index + 1]['x'] < cx):
+            while (data_index + 1 < points_count - 1) and (data[data_index + 1]['x'] < cx):
                 data_index += 1
-        cv = calculate_current_vector(data, max(data_index, points_count - 2))
+        cv = calculate_current_vector(data, data_index)
         cy = calculate_y_coordinate(cv, cx)
-        print(cx, cy)
         y.append(cy)
 
-    # result = fft(np.asarray(y))
-    # print(result)
+    result = fft(np.asarray(y))
+    print(result)
