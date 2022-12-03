@@ -7,6 +7,8 @@ DATASETS = [
     {'workbook_path': 'sample.xlsx', 'sheet_name': 'For C8 between lines'}
 ]
 
+MAX_N = 1024
+
 def read_from_excel_file(workbook_path, sheet_name):
     book = xlrd.open_workbook(workbook_path)
     sheet = book.sheet_by_name(sheet_name)
@@ -45,7 +47,7 @@ def fft(x):
     if np.log2(N) % 1 > 0:
         raise ValueError("size of x must be a power of 2")
 
-    N_min = min(N, 32)
+    N_min = min(N, MAX_N)
 
     n = np.arange(N_min)
     k = n[:, None]
