@@ -92,4 +92,5 @@ for dataset in DATASETS:
         y.append(cy)
 
     result = fft(np.asarray(y))
-    print(result)
+    for data in result:
+        print(data)
