@@ -6,22 +6,18 @@ import numpy as np
 def read_from_excel_file(Workbook_path, sheet_name):
     book = xlrd.open_workbook(Workbook_path)
     sheet = book.sheet_by_name(sheet_name)
-    data = [[sheet.cell_value(r, c) for c in range(sheet.ncols)] for r in range(sheet.nrows)]
-    return __normalize_excel_data(data)
+    return [[sheet.cell_value(r, c) for c in range(sheet.ncols)] for r in range(sheet.nrows)]
 
-def __normalize_excel_data(data):
-    return __sort_by_x_coordinates(__remove_columns(__remove_rows(data)))
-
-def __remove_rows(data):
+def remove_rows(data):
     return data[1:]
 
-def __remove_columns(data):
+def remove_columns(data):
     return list(map(lambda row: {'x': row[0], 'y': row[1]}, data))
 
-def __sort_by_x_coordinates(data):
+def sort_by_x_coordinates(data):
     return sorted(data, key=lambda d: d['x'])
 
-def FFT_vectorized(x):
+def fft(x):
     x = np.asarray(x, dtype=float)
     N = x.shape[0]
 
@@ -46,11 +42,15 @@ def FFT_vectorized(x):
     return X.ravel()
 
 data = read_from_excel_file('sample.xlsx', 'For C8 between lines')
+data = remove_rows(data)
+data = remove_columns(data)
+data = sort_by_x_coordinates(data)
+
 x_coordinates = list(map(lambda p: p['x'], data))
 min_x, max_x, points_count = min(x_coordinates), max(x_coordinates), len(x_coordinates)
 print(min_x, max_x, points_count)
 
 y = [p['y'] for p in data]
 
-result = FFT_vectorized(np.asarray(y))
+result = fft(np.asarray(y))
 print(result)
