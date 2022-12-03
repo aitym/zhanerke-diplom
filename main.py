@@ -14,6 +14,12 @@ def remove_rows(data):
 def remove_columns(data):
     return list(map(lambda row: {'x': row[0], 'y': row[1]}, data))
 
+def average_by_x_coordinates(data):
+    data_grouped_by_x_coordinates = {x: [] for x in data.keys()}
+    for x, y in data:
+        data_grouped_by_x_coordinates[x].append(y)
+    return {x: 0 if len(y_values) == 0 else sum(y_values) / len(y_values) for x, y_values in data.values()}
+
 def sort_by_x_coordinates(data):
     return sorted(data, key=lambda d: d['x'])
 
@@ -44,6 +50,7 @@ def fft(x):
 data = read_from_excel_file('sample.xlsx', 'For C8 between lines')
 data = remove_rows(data)
 data = remove_columns(data)
+data = average_by_x_coordinates(data)
 data = sort_by_x_coordinates(data)
 
 x_coordinates = list(map(lambda p: p['x'], data))
