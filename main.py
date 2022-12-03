@@ -26,10 +26,17 @@ def average_by_x_coordinates(data):
     for row in data:
         if not(row['x'] in data_grouped_by_x_coordinates.keys()): data_grouped_by_x_coordinates[row['x']] = []
         data_grouped_by_x_coordinates[row['x']].append(row['y'])
-    return {x: 0 if len(y_values) == 0 else sum(y_values) / len(y_values) for x, y_values in data_grouped_by_x_coordinates.items()}
+    return [{'x': x, 'y': 0 if len(y_values) == 0 else sum(y_values) / len(y_values)} for x, y_values in data_grouped_by_x_coordinates.items()]
 
 def sort_by_x_coordinates(data):
-    return {key: data[key] for key in sorted(data.keys())}
+    return sorted(data, key=lambda p: p['x'])
+
+def calculate_current_vector(data, left_data_index):
+    return {'from': data[left_data_index], 'to': data[left_data_index + 1]}
+
+def calculate_y_coordinate(current_vector, x):
+    f, t = current_vector['from'], current_vector['to']
+    return f['y'] + (x - f['x']) * (t['y'] - f['y']) / (t['x'] - f['x'])
 
 def fft(x):
     x = np.asarray(x, dtype=float)
@@ -63,19 +70,25 @@ for dataset in DATASETS:
     data = average_by_x_coordinates(data)
     data = sort_by_x_coordinates(data)
 
-    x_coordinates = data.keys()
-    min_x, max_x, points_count = min(x_coordinates), max(x_coordinates), len(x_coordinates)
+    min_x, min_y, max_x, max_y, points_count = data[0]['x'], data[0]['y'], data[-1]['x'], data[-1]['y'], len(data)
 
     y_matrix_size = 1
     while y_matrix_size < points_count:
         y_matrix_size *= 2
 
     y = []
-    x = min_x
-    pointer = 0
+    data_index = 0
     step = (max_x - min_x) / (y_matrix_size - 1)
-    for i in range(y_matrix_size):
-        x += step
+    cv = calculate_current_vector(data, data_index)
+    for y_matrix_index in range(y_matrix_size):
+        cx = min_x + y_matrix_index * step
+        if (data[data_index]['x'] >= min_x) and (data[data_index]['x'] <= max_x):
+            while (data_index + 1 < points_count) and (data[data_index + 1]['x'] < cx):
+                data_index += 1
+        cv = calculate_current_vector(data, max(data_index, points_count - 2))
+        cy = calculate_y_coordinate(cv, cx)
+        print(cx, cy)
+        y.append(cy)
 
     # result = fft(np.asarray(y))
     # print(result)
