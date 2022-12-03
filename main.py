@@ -52,9 +52,7 @@ for dataset in DATASETS:
 
     min_x, max_x, points_count = data[0]['x'], data[-1]['x'], len(data)
 
-    y_matrix_size = 1
-    while y_matrix_size < points_count:
-        y_matrix_size *= 2
+    y_matrix_size = points_count
 
     y = []
     data_index = 0
@@ -72,9 +70,15 @@ for dataset in DATASETS:
     N = y_matrix_size
     T = 1.0 / N
     x = np.linspace(0.0, N * T, N)
+    # y = np.sin(50.0 * 2.0*np.pi*x) + 0.5*np.sin(80.0 * 2.0*np.pi*x)
+    x0 = np.linspace(0.0, 1.0 // (2.0 * T), N // 2)
+    y0 = y
     yf = scipy.fftpack.fft(np.asarray(y))
     xf = np.linspace(0.0, 1.0 // (2.0 * T), N // 2)
 
+    fig, ax = plt.subplots()
+    ax.plot(x0, 2.0 / N * np.abs(y0[:N // 2]))
+    plt.show()
     fig, ax = plt.subplots()
     ax.plot(xf, 2.0 / N * np.abs(yf[:N // 2]))
     plt.show()
