@@ -1,4 +1,4 @@
-var DATA = {
+var ORIGINAL_DATA = {
     "sheets": {
       "C8": [
         {
