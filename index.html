@@ -40,7 +40,16 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/jszip.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.js"></script>
     <script>
-        var collected_data = {}; 
+        var collected_data = {};
+
+        function download(content, fileName, contentType) {
+            var a = document.createElement("a");
+            var file = new Blob([content], {type: contentType});
+            a.href = URL.createObjectURL(file);
+            a.download = fileName;
+            a.click();
+        }
+
         var ExcelToJSON = function() {
             this.parseExcel = function(file) {
                 var reader = new FileReader();
@@ -59,6 +68,7 @@
                         var json_object = JSON.stringify(XL_row_object);
                         jQuery('#xlx_json').val(json_object);
                     });
+                    download(jQuery('#xlx_json').val(), 'json.txt', 'text/plain');
                 };
 
                 reader.onerror = function(ex) {
