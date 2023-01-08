@@ -28,66 +28,9 @@
             </ul>
         </nav>
     </header>
-    <main>
-        <form enctype="multipart/form-data">
-            <input id="upload" type=file name="files[]">
-        </form>
-        <textarea class="form-control" rows=35 cols=120 id="xlx_json"></textarea>
-    </main>
+    <main></main>
     <footer></footer>
     <script src="https://unpkg.com/alpinejs"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/jszip.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.js"></script>
-    <script>
-        var collected_data = {};
-
-        function download(content, fileName, contentType) {
-            var a = document.createElement("a");
-            var file = new Blob([content], {type: contentType});
-            a.href = URL.createObjectURL(file);
-            a.download = fileName;
-            a.click();
-        }
-
-        var ExcelToJSON = function() {
-            this.parseExcel = function(file) {
-                var reader = new FileReader();
-
-                reader.onload = function(e) {
-                    var data = e.target.result;
-                    var workbook = XLSX.read(data, {
-                        type: 'binary'
-                    });
-                    workbook.SheetNames.forEach(function(sheetName) {
-                        var XL_row_object = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
-                        XL_row_object = XL_row_object.map(function (row) {
-                            return {x: (+row.x).toFixed(20), y: (+row.y).toFixed(20)};
-                        });
-                        collected_data[sheetName] = XL_row_object;
-                        var json_object = JSON.stringify(XL_row_object);
-                        jQuery('#xlx_json').val(json_object);
-                    });
-                    download(jQuery('#xlx_json').val(), 'json.txt', 'text/plain');
-                };
-
-                reader.onerror = function(ex) {
-                    console.log(ex);
-                };
-
-                reader.readAsBinaryString(file);
-            };
-        };
-
-        function handleFileSelect(evt) {
-            var files = evt.target.files;
-            var xl2json = new ExcelToJSON();
-            xl2json.parseExcel(files[0]);
-        }
-    </script>
-    <script>
-        document.getElementById('upload').addEventListener('change', handleFileSelect, false);
-    </script>
     <script src="app.js"></script>
 </body>
 </html>
